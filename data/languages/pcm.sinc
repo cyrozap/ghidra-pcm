@@ -54,6 +54,13 @@ attach variables [ rd rx ry rs ] [
 
 # Logical operations.
 
+:eqi rd, rs, #imm32 is op_maj=0b01101 & rd & op_min=0b10 & sh=0 & rx=0 & ry=0 & rs; imm32 {
+	rd = 0;
+	if !(rs == imm32) goto <skip>;
+	rd = 1;
+	<skip>
+}
+
 #:and rd, rs,  rx is op_maj=0b10000 & rd & inv=0 & sh=0 & rx & rs { rd = rs & rx; }
 #:and rd, rs, ~rx is op_maj=0b10000 & rd & inv=1 & sh=0 & rx & rs { rd = rs & ~rx; }
 :and rd, rs,  rx >> #sh is op_maj=0b10000 & rd & inv=0 & shl=0 & sh & rx & rs { rd = (rs &  rx) >> sh; }
