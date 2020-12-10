@@ -78,6 +78,8 @@ attach variables [ rd rx ry rs ] [
 
 :ori rd, rs, #imm32 is op_maj=0b10101 & rd & inv=0 & shl=0 & sh=0 & rs; imm32 { rd = rs | imm32; }
 
+:aoi rd, rs, #imm32, ry is op_maj=0b10111 & rd & op_min=0 & sh=0 & rx=0 & ry & rs; imm32 { rd = (rs & imm32) | ry; }
+
 
 # Function calls, unconditional.
 
