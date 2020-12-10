@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language_definitions>
+  <language processor="MediaTek PCM"
+            endian="little"
+            size="32"
+            variant="default"
+            version="0.1"
+            slafile="pcm.sla"
+            processorspec="pcm.pspec"
+            id="PCM:LE:32:default">
+    <description>MediaTek PCM, little endian</description>
+    <compiler name="default" spec="pcm.cspec" id="default"/>
+  </language>
+</language_definitions>

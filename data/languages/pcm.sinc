@@ -1,0 +1,100 @@
+define alignment=4;
+
+define space IM type=ram_space size=4 default;
+define space DM type=ram_space size=4;
+define space register type=register_space size=4;
+
+define register offset=0 size=4 [
+	r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15
+	r31
+];
+
+define register offset=0x1000 size=4 [
+	pc sp
+];
+
+define token instr(32)
+	op_maj = (27, 31)
+	rd     = (22, 26)
+	op_min = (20, 21)
+	inv    = (21, 21)
+	shl    = (20, 20)
+	sh     = (15, 19)
+	rxry   = (5, 14)
+	rx     = (10, 14)
+	ry     = (5, 9)
+	rs     = (0, 4)
+;
+
+define token imm(32)
+	imm32 = (0, 31)
+;
+
+attach variables [ rd rx ry rs ] [
+	r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15
+	_  _  _  _  _  _  _  _  _  _  _   _   _   _   _   r31
+];
+
+
+:nop is op_maj=0b00010 & rd=31 & inv=0 & shl=0 & sh=0 & rx=31 & ry=0 & rs=31 {}
+
+
+# Data loads.
+
+# Load immediate.
+:loadi rd, #imm32 is op_maj=0b00011 & rd & op_min=0 & sh=0 & rx=0 & ry=0 & rs=31; imm32 { rd = imm32; }
+
+# Load from address.
+:loada rd, [#imm32] is op_maj=0b00011 & rd & op_min=1 & sh=0 & rx=0 & ry=0 & rs=31; imm32 { rd = *[DM]imm32:4; }
+
+
+# Logical operations.
+
+#:and rd, rs,  rx is op_maj=0b10000 & rd & inv=0 & sh=0 & rx & rs { rd = rs & rx; }
+#:and rd, rs, ~rx is op_maj=0b10000 & rd & inv=1 & sh=0 & rx & rs { rd = rs & ~rx; }
+:and rd, rs,  rx >> #sh is op_maj=0b10000 & rd & inv=0 & shl=0 & sh & rx & rs { rd = (rs &  rx) >> sh; }
+:and rd, rs, ~rx >> #sh is op_maj=0b10000 & rd & inv=1 & shl=0 & sh & rx & rs { rd = (rs & ~rx) >> sh; }
+:and rd, rs,  rx << #sh is op_maj=0b10000 & rd & inv=0 & shl=1 & sh & rx & rs { rd = (rs &  rx) << sh; }
+:and rd, rs, ~rx << #sh is op_maj=0b10000 & rd & inv=1 & shl=1 & sh & rx & rs { rd = (rs & ~rx) << sh; }
+
+:or rd, rs,  rx >> #sh is op_maj=0b10100 & rd & inv=0 & shl=0 & sh & rx & rs { rd = (rs |  rx) >> sh; }
+:or rd, rs, ~rx >> #sh is op_maj=0b10100 & rd & inv=1 & shl=0 & sh & rx & rs { rd = (rs | ~rx) >> sh; }
+:or rd, rs,  rx << #sh is op_maj=0b10100 & rd & inv=0 & shl=1 & sh & rx & rs { rd = (rs |  rx) << sh; }
+:or rd, rs, ~rx << #sh is op_maj=0b10100 & rd & inv=1 & shl=1 & sh & rx & rs { rd = (rs | ~rx) << sh; }
+
+:ori rd, rs, #imm32 is op_maj=0b10101 & rd & inv=0 & shl=0 & sh=0 & rs; imm32 { rd = rs | imm32; }
+
+
+# Function calls, unconditional.
+
+:call #jump_dest is op_maj=0b11000 & rxry [
+	jump_dest = rxry * 4;
+] {
+	delayslot(1);
+	call [jump_dest:4];
+}
+
+
+# Jumps, conditional.
+
+# Jump if non-zero.
+:jumpn rs, #jump_dest is op_maj=0b11011 & inv=0 & rxry & rs [
+	jump_dest = rxry * 4;
+] {
+	local delayflag = (rs != 0);
+	delayslot(1);
+	if !delayflag goto <skip>;
+	goto [jump_dest:4];
+	<skip>
+}
+
+# Jump if zero.
+:jumpz rs, #jump_dest is op_maj=0b11011 & inv=1 & rxry & rs [
+	jump_dest = rxry * 4;
+] {
+	local delayflag = (rs == 0);
+	delayslot(1);
+	if !delayflag goto <skip>;
+	goto [jump_dest:4];
+	<skip>
+}
