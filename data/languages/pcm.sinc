@@ -75,6 +75,7 @@ attach variables [ rd rx ry rs ] [
 	jump_dest = rxry * 4;
 ] {
 	delayslot(1);
+	r11 = inst_next;
 	call [jump_dest:4];
 }
 
@@ -115,4 +116,12 @@ attach variables [ rd rx ry rs ] [
 # TODO: Handle more than one data value.
 :storeai [#imm32], #imm32_2 is op_maj=0b11101 & rd=0 & op_min=0b10 & sh=1 & rx=0 & ry=0 & rs=0; imm32; imm32_2 {
 	*[DM]:4 imm32:4 = imm32_2;
+}
+
+
+# Function return.
+# FIXME: The link register functionality is almost certainly wrong.
+:return is op_maj=0b11110 & rd=0 & op_min=0 & sh=0 & rx=0 & ry=0 & rs=0 {
+	delayslot(1);
+	return [r11];
 }
