@@ -20,6 +20,7 @@ define token instr(32)
 	inv    = (21, 21)
 	shl    = (20, 20)
 	sh     = (15, 19)
+	rxryrs = (0, 14)
 	rxry   = (5, 14)
 	rx     = (10, 14)
 	ry     = (5, 9)
@@ -128,6 +129,11 @@ attach variables [ rd rx ry rs ] [
 # Store register at an address pointed to by a register.
 :store rs, [rd] is op_maj=0b11100 & rd & op_min=0 & sh=0 & rx=0 & ry=0 & rs {
 	*[DM]:4 rd = rs;
+}
+
+# Store an instruction immediate at an address pointed to by a register.
+:store #rxryrs, [rd] is op_maj=0b11100 & rd & op_min=0b10 & sh=0 & rxryrs {
+	*[DM]:4 rd = rxryrs;
 }
 
 # Store one or more immediates at an address pointed to by an immediate.
