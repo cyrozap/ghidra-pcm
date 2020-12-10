@@ -81,14 +81,38 @@ attach variables [ rd rx ry rs ] [
 :aoi rd, rs, #imm32, ry is op_maj=0b10111 & rd & op_min=0 & sh=0 & rx=0 & ry & rs; imm32 { rd = (rs & imm32) | ry; }
 
 
-# Function calls, unconditional.
-
+# Function call, unconditional.
 :call #jump_dest is op_maj=0b11000 & rxry [
 	jump_dest = rxry * 4;
 ] {
 	delayslot(1);
 	r11 = inst_next;
 	call [jump_dest:4];
+}
+
+
+# Function calls, conditional.
+
+:calln rs, #jump_dest is op_maj=0b11001 & inv=0 & rxry & rs [
+	jump_dest = rxry * 4;
+] {
+	local delayflag = (rs != 0);
+	delayslot(1);
+	if !delayflag goto <skip>;
+	r11 = inst_next;
+	call [jump_dest:4];
+	<skip>
+}
+
+:callz rs, #jump_dest is op_maj=0b11001 & inv=1 & rxry & rs [
+	jump_dest = rxry * 4;
+] {
+	local delayflag = (rs == 0);
+	delayslot(1);
+	if !delayflag goto <skip>;
+	r11 = inst_next;
+	call [jump_dest:4];
+	<skip>
 }
 
 
