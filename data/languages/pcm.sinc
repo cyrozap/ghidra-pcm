@@ -89,6 +89,15 @@ attach variables [ rd rx ry rs ] [
 }
 
 
+# Jump, unconditional.
+:jump #jump_dest is op_maj=0b11010 & op_min=0 & sh=0 & rxry & rs=0 [
+	jump_dest = rxry * 4;
+] {
+	delayslot(1);
+	goto [jump_dest:4];
+}
+
+
 # Jumps, conditional.
 
 # Jump if non-zero.
