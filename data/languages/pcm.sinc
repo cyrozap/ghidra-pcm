@@ -42,14 +42,14 @@ attach variables [ rd rx ry rs ] [
 ];
 
 
-:nop is op_maj=0b00010 & rd=31 & inv=0 & shl=0 & sh=0 & rx=31 & ry=0 & rs=31 {}
+:nop is (op_maj=0b00000 | op_maj=0b00010) & rd=31 & inv=0 & shl=0 & sh=0 & rx=31 & ry=0 & rs=31 {}
 
 
 # Data moves and loads.
 
 # Move from register to register. Really just a specialized form of the "add" instruction.
-:mv rd,  rx is op_maj=0b00010 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs=31 { rd =  rx; }
-:mv rd, ~rx is op_maj=0b00010 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs=31 { rd = ~rx; }
+:mv rd,  rx is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs=31 { rd =  rx; }
+:mv rd, ~rx is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs=31 { rd = ~rx; }
 
 # Load immediate.
 :loadi rd, #imm32 is op_maj=0b00011 & rd & op_min=0 & sh=0 & rx=0 & ry=0 & rs=31; imm32 { rd = imm32; }
@@ -61,12 +61,12 @@ attach variables [ rd rx ry rs ] [
 # Arithmetic operations.
 
 # Add two registers.
-:add rd, rs,  rx is op_maj=0b00010 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs +  rx; }
-:add rd, rs, ~rx is op_maj=0b00010 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs + ~rx; }
-:add rd, rs,  rx >> #sh is op_maj=0b00010 & rd & inv=0 & shl=0 & sh & rx & rs { rd = rs +  (rx >> sh); }
-:add rd, rs, ~rx >> #sh is op_maj=0b00010 & rd & inv=1 & shl=0 & sh & rx & rs { rd = rs + ~(rx >> sh); }
-:add rd, rs,  rx << #sh is op_maj=0b00010 & rd & inv=0 & shl=1 & sh & rx & rs { rd = rs +  (rx << sh); }
-:add rd, rs, ~rx << #sh is op_maj=0b00010 & rd & inv=1 & shl=1 & sh & rx & rs { rd = rs + ~(rx << sh); }
+:add rd, rs,  rx is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs +  rx; }
+:add rd, rs, ~rx is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs + ~rx; }
+:add rd, rs,  rx >> #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & shl=0 & sh & rx & rs { rd = rs +  (rx >> sh); }
+:add rd, rs, ~rx >> #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=0 & sh & rx & rs { rd = rs + ~(rx >> sh); }
+:add rd, rs,  rx << #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & shl=1 & sh & rx & rs { rd = rs +  (rx << sh); }
+:add rd, rs, ~rx << #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=1 & sh & rx & rs { rd = rs + ~(rx << sh); }
 
 # Add immediate.
 :addi rd, rs, #imm32 is op_maj=0b00011 & rd & op_min=0 & sh=0 & rx=0 & ry=0 & rs; imm32 { rd = rs + imm32; }
@@ -99,10 +99,10 @@ attach variables [ rd rx ry rs ] [
 }
 
 # Shift register. Really just a specialized form of the "add" instruction.
-:srl rd,  rx >> #sh is op_maj=0b00010 & rd & inv=0 & shl=0 & sh & rx & rs=31 { rd =  (rx >> sh); }
-:srl rd, ~rx >> #sh is op_maj=0b00010 & rd & inv=1 & shl=0 & sh & rx & rs=31 { rd = ~(rx >> sh); }
-:sll rd,  rx << #sh is op_maj=0b00010 & rd & inv=0 & shl=1 & sh & rx & rs=31 { rd =  (rx << sh); }
-:sll rd, ~rx << #sh is op_maj=0b00010 & rd & inv=1 & shl=1 & sh & rx & rs=31 { rd = ~(rx << sh); }
+:srl rd,  rx >> #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & shl=0 & sh & rx & rs=31 { rd =  (rx >> sh); }
+:srl rd, ~rx >> #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=0 & sh & rx & rs=31 { rd = ~(rx >> sh); }
+:sll rd,  rx << #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & shl=1 & sh & rx & rs=31 { rd =  (rx << sh); }
+:sll rd, ~rx << #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=1 & sh & rx & rs=31 { rd = ~(rx << sh); }
 
 :and rd, rs,  rx is op_maj=0b10000 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs &  rx; }
 :and rd, rs, ~rx is op_maj=0b10000 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs & ~rx; }
