@@ -53,6 +53,15 @@ attach variables [ rd rx ry rs ] [
 :loada rd, [#imm32] is op_maj=0b00011 & rd & op_min=1 & sh=0 & rx=0 & ry=0 & rs=31; imm32 { rd = *[DM]imm32:4; }
 
 
+# Arithmetic operations.
+
+# Add immediate.
+:addi rd, rs, #imm32 is op_maj=0b00011 & rd & op_min=0 & sh=0 & rx=0 & ry=0 & rs; imm32 { rd = rs + imm32; }
+
+# Add from address.
+:adda rd, rs, [#imm32] is op_maj=0b00011 & rd & op_min=1 & sh=0 & rx=0 & ry=0 & rs; imm32 { rd = rs + *[DM]imm32:4; }
+
+
 # Logical operations.
 
 :eqi rd, rs, #imm32 is op_maj=0b01101 & rd & op_min=0b10 & sh=0 & rx=0 & ry=0 & rs; imm32 {
