@@ -111,6 +111,8 @@ attach variables [ rd rx ry rs ] [
 
 :ori rd, rs, #imm32 is op_maj=0b10101 & rd & inv=0 & shl=0 & sh=0 & rs; imm32 { rd = rs | imm32; }
 
+:ao rd, rs,  rx, ry is op_maj=0b10110 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & ry & rs { rd = (rs &  rx) | ry; }
+:ao rd, rs, ~rx, ry is op_maj=0b10110 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & ry & rs { rd = (rs & ~rx) | ry; }
 :ao rd, rs,  rx >> sh, ry is op_maj=0b10110 & rd & inv=0 & shl=0 & sh & rx & ry & rs { rd = (rs &  (rx >> sh)) | ry; }
 :ao rd, rs, ~rx >> sh, ry is op_maj=0b10110 & rd & inv=1 & shl=0 & sh & rx & ry & rs { rd = (rs & ~(rx >> sh)) | ry; }
 :ao rd, rs,  rx << sh, ry is op_maj=0b10110 & rd & inv=0 & shl=1 & sh & rx & ry & rs { rd = (rs &  (rx << sh)) | ry; }
