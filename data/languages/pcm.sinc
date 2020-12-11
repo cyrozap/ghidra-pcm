@@ -211,9 +211,11 @@ attach variables [ rd rx ry rs ] [
 	*[DM]:4 rd = rs;
 }
 
-# Store an instruction immediate at an address pointed to by a register.
-:store #rxryrs, [rd] is op_maj=0b11100 & rd & op_min=0b10 & sh=0 & rxryrs {
-	*[DM]:4 rd = rxryrs;
+# Store a 16-bit instruction immediate at an address pointed to by a register.
+:store #immediate, [rd] is op_maj=0b11100 & rd & inv=1 & shl & sh=0 & rxryrs [
+	immediate = (shl << 15) | rxryrs;
+] {
+	*[DM]:4 rd = immediate;
 }
 
 # Store one or more immediates at an address pointed to by an immediate.
