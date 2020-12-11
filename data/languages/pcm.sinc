@@ -16,6 +16,7 @@ define register offset=0x1000 size=4 [
 define token instr(32)
 	op_maj = (27, 31)
 	rd     = (22, 26)
+	ird    = (22, 26)
 	op_min = (20, 21)
 	inv    = (21, 21)
 	shl    = (20, 20)
@@ -125,35 +126,35 @@ attach variables [ rd rx ry rs ] [
 
 
 # Function call, unconditional.
-:call #jump_dest is op_maj=0b11000 & rxry [
+:call rd, #jump_dest is op_maj=0b11000 & rd & ird & rxry [
 	jump_dest = rxry * 4;
 ] {
 	delayslot(1);
-	r11 = inst_next;
+	r11 = ird;
 	call [jump_dest:4];
 }
 
 
 # Function calls, conditional.
 
-:calln rs, #jump_dest is op_maj=0b11001 & inv=0 & rxry & rs [
+:calln rd, rs, #jump_dest is op_maj=0b11001 & rd & ird & inv=0 & rxry & rs [
 	jump_dest = rxry * 4;
 ] {
 	local delayflag = (rs != 0);
 	delayslot(1);
 	if !delayflag goto <skip>;
-	r11 = inst_next;
+	r11 = ird;
 	call [jump_dest:4];
 	<skip>
 }
 
-:callz rs, #jump_dest is op_maj=0b11001 & inv=1 & rxry & rs [
+:callz rd, rs, #jump_dest is op_maj=0b11001 & rd & ird & inv=1 & rxry & rs [
 	jump_dest = rxry * 4;
 ] {
 	local delayflag = (rs == 0);
 	delayslot(1);
 	if !delayflag goto <skip>;
-	r11 = inst_next;
+	r11 = ird;
 	call [jump_dest:4];
 	<skip>
 }
