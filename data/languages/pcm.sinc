@@ -106,11 +106,11 @@ attach variables [ rd rx ry rs ] [
 	<skip>
 }
 
-# Shift register. Really just a specialized form of the "add" instruction.
+# Shift register. Really just a specialized form of the "add" and "sub" instructions.
 :srl rd,  rx >> #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & shl=0 & sh & rx & rs=31 { rd =  (rx >> sh); }
-:srl rd, ~rx >> #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=0 & sh & rx & rs=31 { rd = ~(rx >> sh); }
+:srl rd, -rx >> #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=0 & sh & rx & rs=31 { rd = -(rx >> sh); }
 :sll rd,  rx << #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & shl=1 & sh & rx & rs=31 { rd =  (rx << sh); }
-:sll rd, ~rx << #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=1 & sh & rx & rs=31 { rd = ~(rx << sh); }
+:sll rd, -rx << #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=1 & sh & rx & rs=31 { rd = -(rx << sh); }
 
 :and rd, rs,  rx is op_maj=0b10000 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs &  rx; }
 :and rd, rs, ~rx is op_maj=0b10000 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs & ~rx; }
