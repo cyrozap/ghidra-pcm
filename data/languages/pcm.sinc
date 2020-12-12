@@ -152,6 +152,11 @@ attach variables [ rd rx ry rs ] [
 :anora rd, rs,  [#imm32], ry is op_maj=0b10111 & rd & inv=0 & shl=1 & sh=0 & rx=0 & ry & rs; imm32 { rd = (rs &  (*[DM]imm32:4)) | ry; }
 :anora rd, rs, ~[#imm32], ry is op_maj=0b10111 & rd & inv=1 & shl=1 & sh=0 & rx=0 & ry & rs; imm32 { rd = (rs & ~(*[DM]imm32:4)) | ry; }
 
+:anori rd, rs,   #imm32,   #imm32_2  is op_maj=0b10111 & rd & inv=0 & shl=0 & sh=1 & rx=0 & ry=0 & rs; imm32; imm32_2 { rd = (rs &  imm32)          | imm32_2; }
+:anori rd, rs,  ~#imm32,   #imm32_2  is op_maj=0b10111 & rd & inv=1 & shl=0 & sh=1 & rx=0 & ry=0 & rs; imm32; imm32_2 { rd = (rs & ~imm32)          | imm32_2; }
+:anora rd, rs,  [#imm32], [#imm32_2] is op_maj=0b10111 & rd & inv=0 & shl=1 & sh=1 & rx=0 & ry=0 & rs; imm32; imm32_2 { rd = (rs &  (*[DM]imm32:4)) | *[DM]imm32_2:4; }
+:anora rd, rs, ~[#imm32], [#imm32_2] is op_maj=0b10111 & rd & inv=1 & shl=1 & sh=1 & rx=0 & ry=0 & rs; imm32; imm32_2 { rd = (rs & ~(*[DM]imm32:4)) | *[DM]imm32_2:4; }
+
 
 # Function call, unconditional.
 :call rd, #jump_dest is op_maj=0b11000 & rd & ird & rxry [
