@@ -17,7 +17,6 @@ define token instr(32)
 	op_maj = (27, 31)
 	rd     = (22, 26)
 	ird    = (22, 26)
-	op_min = (20, 21)
 	inv    = (21, 21)
 	shl    = (20, 20)
 	sh     = (15, 19)
@@ -53,10 +52,10 @@ attach variables [ rd rx ry rs ] [
 :mv rd,  #0 is (op_maj=0b00000 | op_maj=0b00010) & rd & (inv=0 | inv=1) & (shl=0 | shl=1) & sh=0 & rx=31 & rs=31 { rd = 0; }
 
 # Load immediate.
-:loadi rd, #imm32 is (op_maj=0b00001 | op_maj=0b00011) & rd & op_min=0 & sh=0 & rx=0 & ry=0 & rs=31; imm32 { rd = imm32; }
+:loadi rd, #imm32 is (op_maj=0b00001 | op_maj=0b00011) & rd & inv=0 & shl=0 & sh=0 & rx=0 & ry=0 & rs=31; imm32 { rd = imm32; }
 
 # Load from address.
-:loada rd, [#imm32] is (op_maj=0b00001 | op_maj=0b00011) & rd & op_min=1 & sh=0 & rx=0 & ry=0 & rs=31; imm32 { rd = *[DM]imm32:4; }
+:loada rd, [#imm32] is (op_maj=0b00001 | op_maj=0b00011) & rd & inv=0 & shl=1 & sh=0 & rx=0 & ry=0 & rs=31; imm32 { rd = *[DM]imm32:4; }
 
 
 # Arithmetic operations.
@@ -198,7 +197,7 @@ attach variables [ rd rx ry rs ] [
 
 
 # Jump, unconditional.
-:jump #jump_dest is op_maj=0b11010 & op_min=0 & sh=0 & rxry & rs=0 [
+:jump #jump_dest is op_maj=0b11010 & inv=0 & shl=0 & sh=0 & rxry & rs=0 [
 	jump_dest = rxry * 4;
 ] {
 	delayslot(1);
@@ -234,7 +233,7 @@ attach variables [ rd rx ry rs ] [
 # Data stores.
 
 # Store register at an address pointed to by a register.
-:store rs, [rd] is op_maj=0b11100 & rd & op_min=0 & sh=0 & rx=0 & ry=0 & rs {
+:store rs, [rd] is op_maj=0b11100 & rd & inv=0 & shl=0 & sh=0 & rx=0 & ry=0 & rs {
 	*[DM]:4 rd = rs;
 }
 
@@ -247,14 +246,14 @@ attach variables [ rd rx ry rs ] [
 
 # Store one or more immediates at an address pointed to by an immediate.
 # TODO: Handle more than one data value.
-:storeai [#imm32], #imm32_2 is op_maj=0b11101 & rd=0 & op_min=0b10 & sh=1 & rx=0 & ry=0 & rs=0; imm32; imm32_2 {
+:storeai [#imm32], #imm32_2 is op_maj=0b11101 & rd=0 & inv=1 & shl=0 & sh=1 & rx=0 & ry=0 & rs=0; imm32; imm32_2 {
 	*[DM]:4 imm32:4 = imm32_2;
 }
 
 
 # Function return.
 # FIXME: The link register functionality is almost certainly wrong.
-:return is op_maj=0b11110 & rd=0 & op_min=0 & sh=0 & rx=0 & ry=0 & rs=0 {
+:return is op_maj=0b11110 & rd=0 & inv=0 & shl=0 & sh=0 & rx=0 & ry=0 & rs=0 {
 	delayslot(1);
 	return [r11];
 }
