@@ -42,12 +42,16 @@ attach variables [ r2622 r1410 r0905 r0400 ] [
 
 
 rd: r2622 is r2622 { export r2622; }
+rd: r31 is r31 & r2622=31 { export 0:4; }
 
 rx: r1410 is r1410 { export r1410; }
+rx: r31 is r31 & r1410=31 { export 0:4; }
 
 ry: r0905 is r0905 { export r0905; }
+ry: r31 is r31 & r0905=31 { export 0:4; }
 
 rs: r0400 is r0400 { export r0400; }
+rs: r31 is r31 & r0400=31 { export 0:4; }
 
 
 :nop is (op_maj=0b00000 | op_maj=0b00010) & r2622=31 & inv=0 & shl=0 & sh=0 & r1410=31 & r0905=0 & r0400=31 {}
