@@ -120,8 +120,10 @@ attach variables [ rd rx ry rs ] [
 :and rd, rs,  rx << #sh is op_maj=0b10000 & rd & inv=0 & shl=1 & sh & rx & rs { rd = rs &  (rx << sh); }
 :and rd, rs, ~rx << #sh is op_maj=0b10000 & rd & inv=1 & shl=1 & sh & rx & rs { rd = rs & ~(rx << sh); }
 
-:andi rd, rs,  #imm32  is op_maj=0b10001 & rd & op_min=0 & sh=0 & rs; imm32 { rd = rs & imm32; }
-:anda rd, rs, [#imm32] is op_maj=0b10001 & rd & op_min=1 & sh=0 & rs; imm32 { rd = rs & *[DM]imm32:4; }
+:andi rd, rs,   #imm32  is op_maj=0b10001 & rd & inv=0 & shl=0 & sh=0 & rs; imm32 { rd = rs &  imm32; }
+:andi rd, rs,  ~#imm32  is op_maj=0b10001 & rd & inv=1 & shl=0 & sh=0 & rs; imm32 { rd = rs & ~imm32; }
+:anda rd, rs,  [#imm32] is op_maj=0b10001 & rd & inv=0 & shl=1 & sh=0 & rs; imm32 { rd = rs &  (*[DM]imm32:4); }
+:anda rd, rs, ~[#imm32] is op_maj=0b10001 & rd & inv=1 & shl=1 & sh=0 & rs; imm32 { rd = rs & ~(*[DM]imm32:4); }
 
 :xor rd, rs, rx is op_maj=0b10010 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs ^ rx; }
 :xor rd, rs, rx >> #sh is op_maj=0b10010 & rd & inv=1 & shl=0 & sh & rx & rs { rd = rs ^ (rx >> sh); }
