@@ -1,8 +1,8 @@
 # MediaTek PCM Processor Module for Ghidra
 
-*NOTE*: This is a work-in-progress. Most instructions are supported, but many
-of them have not been tested on real hardware. Because of this, the decompiler
-output for those untested instructions may be incorrect.
+**NOTE**: This is a work-in-progress. Most instructions are supported, but
+many of them have not been tested on real hardware. Because of this, the
+decompiler output for those untested instructions may be incorrect.
 
 Big thanks to [Paul Kocialkowski][paulk] for doing the original reverse
 engineering work for this ISA ([video][video], [slides][slides], [updated
