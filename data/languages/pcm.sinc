@@ -14,7 +14,8 @@ define register offset=0x1000 size=4 [
 ];
 
 define token instr(32)
-	op_maj = (27, 31)
+	op3128 = (28, 31)
+	op2727 = (27, 27)
 	r2622  = (22, 26)
 	ird    = (22, 26)
 	inv    = (21, 21)
@@ -54,64 +55,64 @@ rs: r0400 is r0400 { export r0400; }
 rs: r31 is r31 & r0400=31 { export 0:4; }
 
 
-:nop is (op_maj=0b00000 | op_maj=0b00010) & r2622=31 & inv=0 & shl=0 & sh=0 & r1410=31 & r0905=0 & r0400=31 {}
+:nop is (op3128=0b0000 | op3128=0b0001) & op2727=0 & r2622=31 & inv=0 & shl=0 & sh=0 & r1410=31 & r0905=0 & r0400=31 {}
 
 
 # Data moves and loads.
 
 # Move from register to register. Really just a specialized form of the "add" instruction.
-:mv rd,  rx is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & r0400=31 { rd =  rx; }
-:mv rd, -rx is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & r0400=31 { rd = -rx; }
+:mv rd,  rx is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & r0400=31 { rd =  rx; }
+:mv rd, -rx is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & r0400=31 { rd = -rx; }
 
 # Load immediate.
-:loadi rd, #imm32 is (op_maj=0b00001 | op_maj=0b00011) & rd & inv=0 & shl=0 & sh=0 & r1410=0 & r0905=0 & r0400=31; imm32 { rd = imm32; }
+:loadi rd, #imm32 is (op3128=0b0000 | op3128=0b0001) & op2727=1 & rd & inv=0 & shl=0 & sh=0 & r1410=0 & r0905=0 & r0400=31; imm32 { rd = imm32; }
 
 # Load from address.
-:loada rd, [#imm32] is (op_maj=0b00001 | op_maj=0b00011) & rd & inv=0 & shl=1 & sh=0 & r1410=0 & r0905=0 & r0400=31; imm32 { rd = *[DM]imm32:4; }
+:loada rd, [#imm32] is (op3128=0b0000 | op3128=0b0001) & op2727=1 & rd & inv=0 & shl=1 & sh=0 & r1410=0 & r0905=0 & r0400=31; imm32 { rd = *[DM]imm32:4; }
 
 
 # Arithmetic operations.
 
 # Add two registers.
-:add rd, rs,  rx is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs +  rx; }
-:add rd, rs,  rx >> #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & shl=0 & sh & rx & rs { rd = rs +  (rx >> sh); }
-:add rd, rs,  rx << #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & shl=1 & sh & rx & rs { rd = rs +  (rx << sh); }
+:add rd, rs,  rx is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs +  rx; }
+:add rd, rs,  rx >> #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=0 & shl=0 & sh & rx & rs { rd = rs +  (rx >> sh); }
+:add rd, rs,  rx << #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=0 & shl=1 & sh & rx & rs { rd = rs +  (rx << sh); }
 
 # Add immediate.
-:addi rd, rs, #imm32 is (op_maj=0b00001 | op_maj=0b00011) & rd & inv=0 & shl=0 & sh=0 & r1410=0 & r0905=0 & rs; imm32 { rd = rs + imm32; }
+:addi rd, rs, #imm32 is (op3128=0b0000 | op3128=0b0001) & op2727=1 & rd & inv=0 & shl=0 & sh=0 & r1410=0 & r0905=0 & rs; imm32 { rd = rs + imm32; }
 
 # Add from address.
-:adda rd, rs, [#imm32] is (op_maj=0b00001 | op_maj=0b00011) & rd & inv=0 & shl=1 & sh=0 & r1410=0 & r0905=0 & rs; imm32 { rd = rs + *[DM]imm32:4; }
+:adda rd, rs, [#imm32] is (op3128=0b0000 | op3128=0b0001) & op2727=1 & rd & inv=0 & shl=1 & sh=0 & r1410=0 & r0905=0 & rs; imm32 { rd = rs + *[DM]imm32:4; }
 
 # Subtract two registers.
-:sub rd, rs, rx is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs - rx; }
-:sub rd, rs, rx >> #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=0 & sh & rx & rs { rd = rs - (rx >> sh); }
-:sub rd, rs, rx << #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=1 & sh & rx & rs { rd = rs - (rx << sh); }
+:sub rd, rs, rx is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs - rx; }
+:sub rd, rs, rx >> #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=1 & shl=0 & sh & rx & rs { rd = rs - (rx >> sh); }
+:sub rd, rs, rx << #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=1 & shl=1 & sh & rx & rs { rd = rs - (rx << sh); }
 
 # Subtract immediate.
-:subi rd, rs, #imm32 is (op_maj=0b00001 | op_maj=0b00011) & rd & inv=1 & shl=0 & sh=0 & r1410=0 & r0905=0 & rs; imm32 { rd = rs - imm32; }
+:subi rd, rs, #imm32 is (op3128=0b0000 | op3128=0b0001) & op2727=1 & rd & inv=1 & shl=0 & sh=0 & r1410=0 & r0905=0 & rs; imm32 { rd = rs - imm32; }
 
 # Subtract from address.
-:suba rd, rs, [#imm32] is (op_maj=0b00001 | op_maj=0b00011) & rd & inv=1 & shl=1 & sh=0 & r1410=0 & r0905=0 & rs; imm32 { rd = rs - *[DM]imm32:4; }
+:suba rd, rs, [#imm32] is (op3128=0b0000 | op3128=0b0001) & op2727=1 & rd & inv=1 & shl=1 & sh=0 & r1410=0 & r0905=0 & rs; imm32 { rd = rs - *[DM]imm32:4; }
 
 
 # Logical operations.
 
-:eqz rd, rs is op_maj=0b01100 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & r1410=31 & rs {
+:eqz rd, rs is op3128=0b0110 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & r1410=31 & rs {
 	rd = 0;
 	if !(rs == 0) goto <skip>;
 	rd = 1;
 	<skip>
 }
 
-:eq rd, rs, rx is op_maj=0b01100 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs {
+:eq rd, rs, rx is op3128=0b0110 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs {
 	rd = 0;
 	if !(rs == rx) goto <skip>;
 	rd = 1;
 	<skip>
 }
 
-:eqi rd, rs, #imm32 is op_maj=0b01101 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & r1410=0 & r0905=0 & rs; imm32 {
+:eqi rd, rs, #imm32 is op3128=0b0110 & op2727=1 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & r1410=0 & r0905=0 & rs; imm32 {
 	rd = 0;
 	if !(rs == imm32) goto <skip>;
 	rd = 1;
@@ -119,62 +120,62 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 }
 
 # Shift register. Really just a specialized form of the "add" and "sub" instructions.
-:srl rd,  rx >> #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & shl=0 & sh & rx & r0400=31 { rd =  (rx >> sh); }
-:srl rd, -rx >> #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=0 & sh & rx & r0400=31 { rd = -(rx >> sh); }
-:sll rd,  rx << #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=0 & shl=1 & sh & rx & r0400=31 { rd =  (rx << sh); }
-:sll rd, -rx << #sh is (op_maj=0b00000 | op_maj=0b00010) & rd & inv=1 & shl=1 & sh & rx & r0400=31 { rd = -(rx << sh); }
+:srl rd,  rx >> #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=0 & shl=0 & sh & rx & r0400=31 { rd =  (rx >> sh); }
+:srl rd, -rx >> #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=1 & shl=0 & sh & rx & r0400=31 { rd = -(rx >> sh); }
+:sll rd,  rx << #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=0 & shl=1 & sh & rx & r0400=31 { rd =  (rx << sh); }
+:sll rd, -rx << #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=1 & shl=1 & sh & rx & r0400=31 { rd = -(rx << sh); }
 
-:and rd, rs,  rx is op_maj=0b10000 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs &  rx; }
-:and rd, rs, ~rx is op_maj=0b10000 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs & ~rx; }
-:and rd, rs,  rx >> #sh is op_maj=0b10000 & rd & inv=0 & shl=0 & sh & rx & rs { rd = rs &  (rx >> sh); }
-:and rd, rs, ~rx >> #sh is op_maj=0b10000 & rd & inv=1 & shl=0 & sh & rx & rs { rd = rs & ~(rx >> sh); }
-:and rd, rs,  rx << #sh is op_maj=0b10000 & rd & inv=0 & shl=1 & sh & rx & rs { rd = rs &  (rx << sh); }
-:and rd, rs, ~rx << #sh is op_maj=0b10000 & rd & inv=1 & shl=1 & sh & rx & rs { rd = rs & ~(rx << sh); }
+:and rd, rs,  rx is op3128=0b1000 & op2727=0 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs &  rx; }
+:and rd, rs, ~rx is op3128=0b1000 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs & ~rx; }
+:and rd, rs,  rx >> #sh is op3128=0b1000 & op2727=0 & rd & inv=0 & shl=0 & sh & rx & rs { rd = rs &  (rx >> sh); }
+:and rd, rs, ~rx >> #sh is op3128=0b1000 & op2727=0 & rd & inv=1 & shl=0 & sh & rx & rs { rd = rs & ~(rx >> sh); }
+:and rd, rs,  rx << #sh is op3128=0b1000 & op2727=0 & rd & inv=0 & shl=1 & sh & rx & rs { rd = rs &  (rx << sh); }
+:and rd, rs, ~rx << #sh is op3128=0b1000 & op2727=0 & rd & inv=1 & shl=1 & sh & rx & rs { rd = rs & ~(rx << sh); }
 
-:andi rd, rs,   #imm32  is op_maj=0b10001 & rd & inv=0 & shl=0 & sh=0 & rs; imm32 { rd = rs &  imm32; }
-:andi rd, rs,  ~#imm32  is op_maj=0b10001 & rd & inv=1 & shl=0 & sh=0 & rs; imm32 { rd = rs & ~imm32; }
-:anda rd, rs,  [#imm32] is op_maj=0b10001 & rd & inv=0 & shl=1 & sh=0 & rs; imm32 { rd = rs &  (*[DM]imm32:4); }
-:anda rd, rs, ~[#imm32] is op_maj=0b10001 & rd & inv=1 & shl=1 & sh=0 & rs; imm32 { rd = rs & ~(*[DM]imm32:4); }
+:andi rd, rs,   #imm32  is op3128=0b1000 & op2727=1 & rd & inv=0 & shl=0 & sh=0 & rs; imm32 { rd = rs &  imm32; }
+:andi rd, rs,  ~#imm32  is op3128=0b1000 & op2727=1 & rd & inv=1 & shl=0 & sh=0 & rs; imm32 { rd = rs & ~imm32; }
+:anda rd, rs,  [#imm32] is op3128=0b1000 & op2727=1 & rd & inv=0 & shl=1 & sh=0 & rs; imm32 { rd = rs &  (*[DM]imm32:4); }
+:anda rd, rs, ~[#imm32] is op3128=0b1000 & op2727=1 & rd & inv=1 & shl=1 & sh=0 & rs; imm32 { rd = rs & ~(*[DM]imm32:4); }
 
-:xor rd, rs, rx is op_maj=0b10010 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs ^ rx; }
-:xor rd, rs, rx >> #sh is op_maj=0b10010 & rd & inv=1 & shl=0 & sh & rx & rs { rd = rs ^ (rx >> sh); }
-:xor rd, rs, rx << #sh is op_maj=0b10010 & rd & inv=1 & shl=1 & sh & rx & rs { rd = rs ^ (rx << sh); }
+:xor rd, rs, rx is op3128=0b1001 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs ^ rx; }
+:xor rd, rs, rx >> #sh is op3128=0b1001 & op2727=0 & rd & inv=1 & shl=0 & sh & rx & rs { rd = rs ^ (rx >> sh); }
+:xor rd, rs, rx << #sh is op3128=0b1001 & op2727=0 & rd & inv=1 & shl=1 & sh & rx & rs { rd = rs ^ (rx << sh); }
 
-:xori rd, rs,  #imm32  is op_maj=0b10011 & rd & inv=1 & shl=0 & sh=0 & rs; imm32 { rd = rs | imm32; }
-:xora rd, rs, [#imm32] is op_maj=0b10011 & rd & inv=1 & shl=1 & sh=0 & rs; imm32 { rd = rs | *[DM]imm32:4; }
+:xori rd, rs,  #imm32  is op3128=0b1001 & op2727=1 & rd & inv=1 & shl=0 & sh=0 & rs; imm32 { rd = rs | imm32; }
+:xora rd, rs, [#imm32] is op3128=0b1001 & op2727=1 & rd & inv=1 & shl=1 & sh=0 & rs; imm32 { rd = rs | *[DM]imm32:4; }
 
-:or rd, rs,  rx is op_maj=0b10100 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs |  rx; }
-:or rd, rs, ~rx is op_maj=0b10100 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs | ~rx; }
-:or rd, rs,  rx >> #sh is op_maj=0b10100 & rd & inv=0 & shl=0 & sh & rx & rs { rd = rs |  (rx >> sh); }
-:or rd, rs, ~rx >> #sh is op_maj=0b10100 & rd & inv=1 & shl=0 & sh & rx & rs { rd = rs | ~(rx >> sh); }
-:or rd, rs,  rx << #sh is op_maj=0b10100 & rd & inv=0 & shl=1 & sh & rx & rs { rd = rs |  (rx << sh); }
-:or rd, rs, ~rx << #sh is op_maj=0b10100 & rd & inv=1 & shl=1 & sh & rx & rs { rd = rs | ~(rx << sh); }
+:or rd, rs,  rx is op3128=0b1010 & op2727=0 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs |  rx; }
+:or rd, rs, ~rx is op3128=0b1010 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs | ~rx; }
+:or rd, rs,  rx >> #sh is op3128=0b1010 & op2727=0 & rd & inv=0 & shl=0 & sh & rx & rs { rd = rs |  (rx >> sh); }
+:or rd, rs, ~rx >> #sh is op3128=0b1010 & op2727=0 & rd & inv=1 & shl=0 & sh & rx & rs { rd = rs | ~(rx >> sh); }
+:or rd, rs,  rx << #sh is op3128=0b1010 & op2727=0 & rd & inv=0 & shl=1 & sh & rx & rs { rd = rs |  (rx << sh); }
+:or rd, rs, ~rx << #sh is op3128=0b1010 & op2727=0 & rd & inv=1 & shl=1 & sh & rx & rs { rd = rs | ~(rx << sh); }
 
-:ori rd, rs,   #imm32  is op_maj=0b10101 & rd & inv=0 & shl=0 & sh=0 & rs; imm32 { rd = rs |  imm32; }
-:ori rd, rs,  ~#imm32  is op_maj=0b10101 & rd & inv=1 & shl=0 & sh=0 & rs; imm32 { rd = rs | ~imm32; }
-:ora rd, rs,  [#imm32] is op_maj=0b10101 & rd & inv=0 & shl=1 & sh=0 & rs; imm32 { rd = rs |  (*[DM]imm32:4); }
-:ora rd, rs, ~[#imm32] is op_maj=0b10101 & rd & inv=1 & shl=1 & sh=0 & rs; imm32 { rd = rs | ~(*[DM]imm32:4); }
+:ori rd, rs,   #imm32  is op3128=0b1010 & op2727=1 & rd & inv=0 & shl=0 & sh=0 & rs; imm32 { rd = rs |  imm32; }
+:ori rd, rs,  ~#imm32  is op3128=0b1010 & op2727=1 & rd & inv=1 & shl=0 & sh=0 & rs; imm32 { rd = rs | ~imm32; }
+:ora rd, rs,  [#imm32] is op3128=0b1010 & op2727=1 & rd & inv=0 & shl=1 & sh=0 & rs; imm32 { rd = rs |  (*[DM]imm32:4); }
+:ora rd, rs, ~[#imm32] is op3128=0b1010 & op2727=1 & rd & inv=1 & shl=1 & sh=0 & rs; imm32 { rd = rs | ~(*[DM]imm32:4); }
 
-:anor rd, rs,  rx, ry is op_maj=0b10110 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & ry & rs { rd = (rs &  rx) | ry; }
-:anor rd, rs, ~rx, ry is op_maj=0b10110 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & ry & rs { rd = (rs & ~rx) | ry; }
-:anor rd, rs,  rx >> sh, ry is op_maj=0b10110 & rd & inv=0 & shl=0 & sh & rx & ry & rs { rd = (rs &  (rx >> sh)) | ry; }
-:anor rd, rs, ~rx >> sh, ry is op_maj=0b10110 & rd & inv=1 & shl=0 & sh & rx & ry & rs { rd = (rs & ~(rx >> sh)) | ry; }
-:anor rd, rs,  rx << sh, ry is op_maj=0b10110 & rd & inv=0 & shl=1 & sh & rx & ry & rs { rd = (rs &  (rx << sh)) | ry; }
-:anor rd, rs, ~rx << sh, ry is op_maj=0b10110 & rd & inv=1 & shl=1 & sh & rx & ry & rs { rd = (rs & ~(rx << sh)) | ry; }
+:anor rd, rs,  rx, ry is op3128=0b1011 & op2727=0 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & ry & rs { rd = (rs &  rx) | ry; }
+:anor rd, rs, ~rx, ry is op3128=0b1011 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & ry & rs { rd = (rs & ~rx) | ry; }
+:anor rd, rs,  rx >> sh, ry is op3128=0b1011 & op2727=0 & rd & inv=0 & shl=0 & sh & rx & ry & rs { rd = (rs &  (rx >> sh)) | ry; }
+:anor rd, rs, ~rx >> sh, ry is op3128=0b1011 & op2727=0 & rd & inv=1 & shl=0 & sh & rx & ry & rs { rd = (rs & ~(rx >> sh)) | ry; }
+:anor rd, rs,  rx << sh, ry is op3128=0b1011 & op2727=0 & rd & inv=0 & shl=1 & sh & rx & ry & rs { rd = (rs &  (rx << sh)) | ry; }
+:anor rd, rs, ~rx << sh, ry is op3128=0b1011 & op2727=0 & rd & inv=1 & shl=1 & sh & rx & ry & rs { rd = (rs & ~(rx << sh)) | ry; }
 
-:anori rd, rs,   #imm32,  ry is op_maj=0b10111 & rd & inv=0 & shl=0 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs &  imm32)        | ry; }
-:anori rd, rs,  ~#imm32,  ry is op_maj=0b10111 & rd & inv=1 & shl=0 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs & ~imm32)        | ry; }
-:anora rd, rs,  [#imm32], ry is op_maj=0b10111 & rd & inv=0 & shl=1 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs &  (*[DM]imm32:4)) | ry; }
-:anora rd, rs, ~[#imm32], ry is op_maj=0b10111 & rd & inv=1 & shl=1 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs & ~(*[DM]imm32:4)) | ry; }
+:anori rd, rs,   #imm32,  ry is op3128=0b1011 & op2727=1 & rd & inv=0 & shl=0 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs &  imm32)        | ry; }
+:anori rd, rs,  ~#imm32,  ry is op3128=0b1011 & op2727=1 & rd & inv=1 & shl=0 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs & ~imm32)        | ry; }
+:anora rd, rs,  [#imm32], ry is op3128=0b1011 & op2727=1 & rd & inv=0 & shl=1 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs &  (*[DM]imm32:4)) | ry; }
+:anora rd, rs, ~[#imm32], ry is op3128=0b1011 & op2727=1 & rd & inv=1 & shl=1 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs & ~(*[DM]imm32:4)) | ry; }
 
-:anori rd, rs,   #imm32,   #imm32_2  is op_maj=0b10111 & rd & inv=0 & shl=0 & sh=1 & r1410=0 & r0905=0 & rs; imm32; imm32_2 { rd = (rs &  imm32)          | imm32_2; }
-:anori rd, rs,  ~#imm32,   #imm32_2  is op_maj=0b10111 & rd & inv=1 & shl=0 & sh=1 & r1410=0 & r0905=0 & rs; imm32; imm32_2 { rd = (rs & ~imm32)          | imm32_2; }
-:anora rd, rs,  [#imm32], [#imm32_2] is op_maj=0b10111 & rd & inv=0 & shl=1 & sh=1 & r1410=0 & r0905=0 & rs; imm32; imm32_2 { rd = (rs &  (*[DM]imm32:4)) | *[DM]imm32_2:4; }
-:anora rd, rs, ~[#imm32], [#imm32_2] is op_maj=0b10111 & rd & inv=1 & shl=1 & sh=1 & r1410=0 & r0905=0 & rs; imm32; imm32_2 { rd = (rs & ~(*[DM]imm32:4)) | *[DM]imm32_2:4; }
+:anori rd, rs,   #imm32,   #imm32_2  is op3128=0b1011 & op2727=1 & rd & inv=0 & shl=0 & sh=1 & r1410=0 & r0905=0 & rs; imm32; imm32_2 { rd = (rs &  imm32)          | imm32_2; }
+:anori rd, rs,  ~#imm32,   #imm32_2  is op3128=0b1011 & op2727=1 & rd & inv=1 & shl=0 & sh=1 & r1410=0 & r0905=0 & rs; imm32; imm32_2 { rd = (rs & ~imm32)          | imm32_2; }
+:anora rd, rs,  [#imm32], [#imm32_2] is op3128=0b1011 & op2727=1 & rd & inv=0 & shl=1 & sh=1 & r1410=0 & r0905=0 & rs; imm32; imm32_2 { rd = (rs &  (*[DM]imm32:4)) | *[DM]imm32_2:4; }
+:anora rd, rs, ~[#imm32], [#imm32_2] is op3128=0b1011 & op2727=1 & rd & inv=1 & shl=1 & sh=1 & r1410=0 & r0905=0 & rs; imm32; imm32_2 { rd = (rs & ~(*[DM]imm32:4)) | *[DM]imm32_2:4; }
 
 
 # Function call, unconditional.
-:call rd, #jump_dest is op_maj=0b11000 & rd & ird & rxry [
+:call rd, #jump_dest is op3128=0b1100 & op2727=0 & rd & ird & rxry [
 	jump_dest = rxry * 4;
 ] {
 	delayslot(1);
@@ -185,7 +186,7 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 
 # Function calls, conditional.
 
-:calln rd, rs, #jump_dest is op_maj=0b11001 & rd & ird & inv=0 & rxry & rs [
+:calln rd, rs, #jump_dest is op3128=0b1100 & op2727=1 & rd & ird & inv=0 & rxry & rs [
 	jump_dest = rxry * 4;
 ] {
 	local delayflag = (rs != 0);
@@ -196,7 +197,7 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 	<skip>
 }
 
-:callz rd, rs, #jump_dest is op_maj=0b11001 & rd & ird & inv=1 & rxry & rs [
+:callz rd, rs, #jump_dest is op3128=0b1100 & op2727=1 & rd & ird & inv=1 & rxry & rs [
 	jump_dest = rxry * 4;
 ] {
 	local delayflag = (rs == 0);
@@ -209,7 +210,7 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 
 
 # Jump, unconditional.
-:jump #jump_dest is op_maj=0b11010 & inv=0 & shl=0 & sh=0 & rxry & r0400=0 [
+:jump #jump_dest is op3128=0b1101 & op2727=0 & inv=0 & shl=0 & sh=0 & rxry & r0400=0 [
 	jump_dest = rxry * 4;
 ] {
 	delayslot(1);
@@ -220,7 +221,7 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 # Jumps, conditional.
 
 # Jump if non-zero.
-:jumpn rs, #jump_dest is op_maj=0b11011 & inv=0 & rxry & rs [
+:jumpn rs, #jump_dest is op3128=0b1101 & op2727=1 & inv=0 & rxry & rs [
 	jump_dest = rxry * 4;
 ] {
 	local delayflag = (rs != 0);
@@ -231,7 +232,7 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 }
 
 # Jump if zero.
-:jumpz rs, #jump_dest is op_maj=0b11011 & inv=1 & rxry & rs [
+:jumpz rs, #jump_dest is op3128=0b1101 & op2727=1 & inv=1 & rxry & rs [
 	jump_dest = rxry * 4;
 ] {
 	local delayflag = (rs == 0);
@@ -245,12 +246,12 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 # Data stores.
 
 # Store register at an address pointed to by a register.
-:store rs, [rd] is op_maj=0b11100 & rd & inv=0 & shl=0 & sh=0 & r1410=0 & r0905=0 & rs {
+:store rs, [rd] is op3128=0b1110 & op2727=0 & rd & inv=0 & shl=0 & sh=0 & r1410=0 & r0905=0 & rs {
 	*[DM]:4 rd = rs;
 }
 
 # Store a 16-bit instruction immediate at an address pointed to by a register.
-:store #immediate, [rd] is op_maj=0b11100 & rd & inv=1 & shl & sh=0 & rxryrs [
+:store #immediate, [rd] is op3128=0b1110 & op2727=0 & rd & inv=1 & shl & sh=0 & rxryrs [
 	immediate = (shl << 15) | rxryrs;
 ] {
 	*[DM]:4 rd = immediate;
@@ -258,14 +259,14 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 
 # Store one or more immediates at an address pointed to by an immediate.
 # TODO: Handle more than one data value.
-:storeai [#imm32], #imm32_2 is op_maj=0b11101 & r2622=0 & inv=1 & shl=0 & sh=1 & r1410=0 & r0905=0 & r0400=0; imm32; imm32_2 {
+:storeai [#imm32], #imm32_2 is op3128=0b1110 & op2727=1 & r2622=0 & inv=1 & shl=0 & sh=1 & r1410=0 & r0905=0 & r0400=0; imm32; imm32_2 {
 	*[DM]:4 imm32:4 = imm32_2;
 }
 
 
 # Function return.
 # FIXME: The link register functionality is almost certainly wrong.
-:return is op_maj=0b11110 & r2622=0 & inv=0 & shl=0 & sh=0 & r1410=0 & r0905=0 & r0400=0 {
+:return is op3128=0b1111 & op2727=0 & r2622=0 & inv=0 & shl=0 & sh=0 & r1410=0 & r0905=0 & r0400=0 {
 	delayslot(1);
 	return [r11];
 }
