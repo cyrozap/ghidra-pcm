@@ -10,7 +10,7 @@ define register offset=0 size=4 [
 ];
 
 define register offset=0x1000 size=4 [
-	sp
+	sp  # Dummy stack pointer to make the decompiler work.
 ];
 
 define token instr(32)
