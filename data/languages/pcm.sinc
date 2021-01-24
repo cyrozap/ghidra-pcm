@@ -257,6 +257,15 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 	*[DM]:4 rd = immediate;
 }
 
+# Store a 16-bit instruction immediate and one or more 32-bit immediates at an address pointed to by a register.
+# TODO: Handle more than two data values.
+:storei [rd], #immediate, #imm32 is op3128=0b1110 & op2727=1 & rd & inv=0 & shl & sh=0 & rxryrs; imm32 [
+	immediate = (shl << 15) | rxryrs;
+] {
+	*[DM]:4 rd = immediate;
+	*[DM]:4 (rd + 4) = imm32;
+}
+
 # Store one or more immediates at an address pointed to by an immediate.
 # TODO: Handle more than one data value.
 :storeai [#imm32], #imm32_2 is op3128=0b1110 & op2727=1 & r2622=0 & inv=1 & shl=0 & sh=1 & r1410=0 & r0905=0 & r0400=0; imm32; imm32_2 {
