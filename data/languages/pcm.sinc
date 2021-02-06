@@ -100,23 +100,20 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 
 :eqz rd, rs is op3128=0b0110 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & r1410=31 & rs {
 	rd = 0;
-	if !(rs == 0) goto <skip>;
+	if !(rs == 0) goto inst_next;
 	rd = 1;
-	<skip>
 }
 
 :eq rd, rs, rx is op3128=0b0110 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs {
 	rd = 0;
-	if !(rs == rx) goto <skip>;
+	if !(rs == rx) goto inst_next;
 	rd = 1;
-	<skip>
 }
 
 :eqi rd, rs, #imm32 is op3128=0b0110 & op2727=1 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & r1410=0 & r0905=0 & rs; imm32 {
 	rd = 0;
-	if !(rs == imm32) goto <skip>;
+	if !(rs == imm32) goto inst_next;
 	rd = 1;
-	<skip>
 }
 
 # Shift register. Really just a specialized form of the "add" and "sub" instructions.
@@ -191,10 +188,9 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 ] {
 	local delayflag = (rs != 0);
 	delayslot(1);
-	if !delayflag goto <skip>;
+	if !delayflag goto inst_next;
 	r11 = ird;
 	call [jump_dest:4];
-	<skip>
 }
 
 :callz rd, rs, #jump_dest is op3128=0b1100 & op2727=1 & rd & ird & inv=1 & rxry & rs [
@@ -202,10 +198,9 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 ] {
 	local delayflag = (rs == 0);
 	delayslot(1);
-	if !delayflag goto <skip>;
+	if !delayflag goto inst_next;
 	r11 = ird;
 	call [jump_dest:4];
-	<skip>
 }
 
 
@@ -226,9 +221,8 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 ] {
 	local delayflag = (rs != 0);
 	delayslot(1);
-	if !delayflag goto <skip>;
+	if !delayflag goto inst_next;
 	goto [jump_dest:4];
-	<skip>
 }
 
 # Jump if zero.
@@ -237,9 +231,8 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 ] {
 	local delayflag = (rs == 0);
 	delayslot(1);
-	if !delayflag goto <skip>;
+	if !delayflag goto inst_next;
 	goto [jump_dest:4];
-	<skip>
 }
 
 
