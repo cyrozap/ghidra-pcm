@@ -99,21 +99,15 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 # Logical operations.
 
 :eqz rd, rs is op3128=0b0110 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & r1410=31 & rs {
-	rd = 0;
-	if !(rs == 0) goto inst_next;
-	rd = 1;
+	rd = zext(rs == 0);
 }
 
 :eq rd, rs, rx is op3128=0b0110 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs {
-	rd = 0;
-	if !(rs == rx) goto inst_next;
-	rd = 1;
+	rd = zext(rs == rx);
 }
 
 :eqi rd, rs, #imm32 is op3128=0b0110 & op2727=1 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & r1410=0 & r0905=0 & rs; imm32 {
-	rd = 0;
-	if !(rs == imm32) goto inst_next;
-	rd = 1;
+	rd = zext(rs == imm32);
 }
 
 # Shift register. Really just a specialized form of the "add" and "sub" instructions.
