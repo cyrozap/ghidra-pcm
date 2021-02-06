@@ -163,8 +163,8 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 :anor rd, rs,  rx << sh, ry is op3128=0b1011 & op2727=0 & rd & inv=0 & shl=1 & sh & rx & ry & rs { rd = (rs &  (rx << sh)) | ry; }
 :anor rd, rs, ~rx << sh, ry is op3128=0b1011 & op2727=0 & rd & inv=1 & shl=1 & sh & rx & ry & rs { rd = (rs & ~(rx << sh)) | ry; }
 
-:anori rd, rs,   #imm32,  ry is op3128=0b1011 & op2727=1 & rd & inv=0 & shl=0 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs &  imm32)        | ry; }
-:anori rd, rs,  ~#imm32,  ry is op3128=0b1011 & op2727=1 & rd & inv=1 & shl=0 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs & ~imm32)        | ry; }
+:anori rd, rs,   #imm32,  ry is op3128=0b1011 & op2727=1 & rd & inv=0 & shl=0 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs &  imm32)          | ry; }
+:anori rd, rs,  ~#imm32,  ry is op3128=0b1011 & op2727=1 & rd & inv=1 & shl=0 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs & ~imm32)          | ry; }
 :anora rd, rs,  [#imm32], ry is op3128=0b1011 & op2727=1 & rd & inv=0 & shl=1 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs &  (*[DM]imm32:4)) | ry; }
 :anora rd, rs, ~[#imm32], ry is op3128=0b1011 & op2727=1 & rd & inv=1 & shl=1 & sh=0 & r1410=0 & ry & rs; imm32 { rd = (rs & ~(*[DM]imm32:4)) | ry; }
 
