@@ -95,8 +95,14 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 # Subtract from address.
 :suba rd, rs, [#imm32] is (op3128=0b0000 | op3128=0b0001) & op2727=1 & rd & inv=1 & shl=1 & sh=0 & r1410=0 & r0905=0 & rs; imm32 { rd = rs - *[DM]imm32:4; }
 
+# Shift register. Really just a specialized form of the "add" and "sub" instructions.
+:srl rd,  rx >> #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=0 & shl=0 & sh & rx & r0400=31 { rd =  (rx >> sh); }
+:srl rd, -rx >> #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=1 & shl=0 & sh & rx & r0400=31 { rd = -(rx >> sh); }
+:sll rd,  rx << #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=0 & shl=1 & sh & rx & r0400=31 { rd =  (rx << sh); }
+:sll rd, -rx << #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=1 & shl=1 & sh & rx & r0400=31 { rd = -(rx << sh); }
 
-# Logical operations.
+
+# Comparison operations.
 
 :eqz rd, rs is op3128=0b0110 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & r1410=31 & rs { rd = zext(rs == 0); }
 
@@ -104,11 +110,8 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 
 :eqi rd, rs, #imm32 is op3128=0b0110 & op2727=1 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & r1410=0 & r0905=0 & rs; imm32 { rd = zext(rs == imm32); }
 
-# Shift register. Really just a specialized form of the "add" and "sub" instructions.
-:srl rd,  rx >> #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=0 & shl=0 & sh & rx & r0400=31 { rd =  (rx >> sh); }
-:srl rd, -rx >> #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=1 & shl=0 & sh & rx & r0400=31 { rd = -(rx >> sh); }
-:sll rd,  rx << #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=0 & shl=1 & sh & rx & r0400=31 { rd =  (rx << sh); }
-:sll rd, -rx << #sh is (op3128=0b0000 | op3128=0b0001) & op2727=0 & rd & inv=1 & shl=1 & sh & rx & r0400=31 { rd = -(rx << sh); }
+
+# Logical operations.
 
 :and rd, rs,  rx is op3128=0b1000 & op2727=0 & rd & inv=0 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs &  rx; }
 :and rd, rs, ~rx is op3128=0b1000 & op2727=0 & rd & inv=1 & (shl=0 | shl=1) & sh=0 & rx & rs { rd = rs & ~rx; }
