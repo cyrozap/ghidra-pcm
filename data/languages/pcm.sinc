@@ -9,6 +9,10 @@ define register offset=0 size=4 [
 	r31
 ];
 
+define register offset=60 size=2 [
+	pc  # Lower two bytes of r15.
+];
+
 define register offset=0x1000 size=4 [
 	sp  # Dummy stack pointer to make the decompiler work.
 ];
