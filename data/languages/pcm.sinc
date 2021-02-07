@@ -113,8 +113,10 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 :eq rd, rs, -rx << #sh is op3128=0b0110 & op2727=0 & rd & inv=0 & shl=1 & sh & rx & rs { rd = zext(rs == -(rx << sh)); }
 :eq rd, rs,  rx << #sh is op3128=0b0110 & op2727=0 & rd & inv=1 & shl=1 & sh & rx & rs { rd = zext(rs ==  (rx << sh)); }
 
-:eqi rd, rs,  #imm32  is op3128=0b0110 & op2727=1 & rd & inv=1 & shl=0 & sh=0 & rs; imm32 { rd = zext(rs == imm32); }
-:eqa rd, rs, [#imm32] is op3128=0b0110 & op2727=1 & rd & inv=1 & shl=1 & sh=0 & rs; imm32 { rd = zext(rs == *[DM]imm32:4); }
+:eqi rd, rs,  -#imm32  is op3128=0b0110 & op2727=1 & rd & inv=0 & shl=0 & sh=0 & rs; imm32 { rd = zext(rs == -imm32); }
+:eqi rd, rs,   #imm32  is op3128=0b0110 & op2727=1 & rd & inv=1 & shl=0 & sh=0 & rs; imm32 { rd = zext(rs ==  imm32); }
+:eqa rd, rs, -[#imm32] is op3128=0b0110 & op2727=1 & rd & inv=0 & shl=1 & sh=0 & rs; imm32 { rd = zext(rs == -(*[DM]imm32:4)); }
+:eqa rd, rs,  [#imm32] is op3128=0b0110 & op2727=1 & rd & inv=1 & shl=1 & sh=0 & rs; imm32 { rd = zext(rs ==  (*[DM]imm32:4)); }
 
 
 # Logical operations.
