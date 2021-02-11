@@ -245,8 +245,8 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 
 
 # Function call, unconditional.
-:call rd, #jump_dest is op3128=0b1100 & op2727=0 & rd & ird & rxry [
-	jump_dest = rxry * 4;
+:call rd, #jump_dest is op3128=0b1100 & op2727=0 & rd & ird & sh & rxry [
+	jump_dest = ((sh << 10) | rxry) * 4;
 ] {
 	delayslot(1);
 	r11 = ird;
@@ -256,8 +256,8 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 
 # Function calls, conditional.
 
-:calln rd, rs, #jump_dest is op3128=0b1100 & op2727=1 & rd & ird & inv=0 & rxry & rs [
-	jump_dest = rxry * 4;
+:calln rd, rs, #jump_dest is op3128=0b1100 & op2727=1 & rd & ird & inv=0 & sh & rxry & rs [
+	jump_dest = ((sh << 10) | rxry) * 4;
 ] {
 	local delayflag = (rs != 0);
 	delayslot(1);
@@ -266,8 +266,8 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 	call [jump_dest:4];
 }
 
-:callz rd, rs, #jump_dest is op3128=0b1100 & op2727=1 & rd & ird & inv=1 & rxry & rs [
-	jump_dest = rxry * 4;
+:callz rd, rs, #jump_dest is op3128=0b1100 & op2727=1 & rd & ird & inv=1 & sh & rxry & rs [
+	jump_dest = ((sh << 10) | rxry) * 4;
 ] {
 	local delayflag = (rs == 0);
 	delayslot(1);
@@ -278,8 +278,8 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 
 
 # Jump, unconditional.
-:jump #jump_dest is op3128=0b1101 & op2727=0 & inv=0 & shl=0 & sh=0 & rxry & r0400=0 [
-	jump_dest = rxry * 4;
+:jump #jump_dest is op3128=0b1101 & op2727=0 & inv=0 & shl=0 & sh & rxry & r0400=0 [
+	jump_dest = ((sh << 10) | rxry) * 4;
 ] {
 	delayslot(1);
 	goto [jump_dest:4];
@@ -289,8 +289,8 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 # Jumps, conditional.
 
 # Jump if non-zero.
-:jumpn rs, #jump_dest is op3128=0b1101 & op2727=1 & inv=0 & rxry & rs [
-	jump_dest = rxry * 4;
+:jumpn rs, #jump_dest is op3128=0b1101 & op2727=1 & inv=0 & sh & rxry & rs [
+	jump_dest = ((sh << 10) | rxry) * 4;
 ] {
 	local delayflag = (rs != 0);
 	delayslot(1);
@@ -299,8 +299,8 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 }
 
 # Jump if zero.
-:jumpz rs, #jump_dest is op3128=0b1101 & op2727=1 & inv=1 & rxry & rs [
-	jump_dest = rxry * 4;
+:jumpz rs, #jump_dest is op3128=0b1101 & op2727=1 & inv=1 & sh & rxry & rs [
+	jump_dest = ((sh << 10) | rxry) * 4;
 ] {
 	local delayflag = (rs == 0);
 	delayslot(1);
