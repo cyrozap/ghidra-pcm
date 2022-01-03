@@ -1,4 +1,4 @@
-# MediaTek PCM Processor Module for Ghidra
+# MediaTek PCM (SPM) Processor Module for Ghidra
 
 **NOTE**: This is a work-in-progress. Most instructions are supported, but
 many of them have not been tested on real hardware. Because of this, the
