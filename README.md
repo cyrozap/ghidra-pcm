@@ -11,11 +11,13 @@ slides][slides-updated]).
 ## Build and Install
 
 ```
-$ cd ghidra_9.*/Ghidra/Processors
-$ git clone https://github.com/cyrozap/ghidra-pcm.git PCM
-$ cd PCM
-$ make
+$ git clone https://github.com/cyrozap/ghidra-pcm.git
+$ cd ghidra-pcm
+$ gradle
 ```
+
+The `dist` directory will now contain the extension zip file that you can
+install into Ghidra.
 
 
 [paulk]: https://paulk.fr/
