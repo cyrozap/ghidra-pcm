@@ -1,6 +1,6 @@
 define alignment=4;
 
-define space IM type=ram_space size=4 default;
+define space IM type=ram_space size=2 default;
 define space DM type=ram_space size=4;
 define space register type=register_space size=4;
 
@@ -250,7 +250,7 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 ] {
 	delayslot(1);
 	r11 = ird;
-	call [jump_dest:4];
+	call [jump_dest:2];
 }
 
 
@@ -263,7 +263,7 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 	delayslot(1);
 	if !delayflag goto inst_next;
 	r11 = ird;
-	call [jump_dest:4];
+	call [jump_dest:2];
 }
 
 :callz rd, rs, #jump_dest is op3128=0xc & op2727=1 & rd & ird & inv=1 & sh & rxry & rs [
@@ -273,7 +273,7 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 	delayslot(1);
 	if !delayflag goto inst_next;
 	r11 = ird;
-	call [jump_dest:4];
+	call [jump_dest:2];
 }
 
 
@@ -282,7 +282,7 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 	jump_dest = ((sh << 10) | rxry) * 4;
 ] {
 	delayslot(1);
-	goto [jump_dest:4];
+	goto [jump_dest:2];
 }
 
 
@@ -295,7 +295,7 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 	local delayflag = (rs != 0);
 	delayslot(1);
 	if !delayflag goto inst_next;
-	goto [jump_dest:4];
+	goto [jump_dest:2];
 }
 
 # Jump if zero.
@@ -305,7 +305,7 @@ rs: r31 is r31 & r0400=31 { export 0:4; }
 	local delayflag = (rs == 0);
 	delayslot(1);
 	if !delayflag goto inst_next;
-	goto [jump_dest:4];
+	goto [jump_dest:2];
 }
 
 
